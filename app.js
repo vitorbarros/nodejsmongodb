@@ -5,34 +5,18 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var hbs = require('hbs');
+var connection = require('./models');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var person = require('./routes/person');
 
 var app = express();
 
-//mongoose connect
-var db = mongoose.connect('mongodb://localhost/nodejsmongodb').connection;
-db.on('open', function(){
-  console.log('Mongo connected');
-});
-db.on('error', function () {
-  console.log('error');
-});
-
-var company = mongoose.Schema({
-  name: String
-});
-
-var Company = mongoose.model('Company', company);
-Company.create({
-  name: 'To Up Web'
-}, function (err, company){
-  if(err){
-    console.log('error');
-    return;
-  }
-  console.log('Company has been created');
+//registering a hbs helper
+hbs.registerHelper('date', function(){
+    return new Date();
 });
 
 // view engine setup
@@ -49,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/person', person);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
